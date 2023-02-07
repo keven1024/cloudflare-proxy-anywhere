@@ -107,3 +107,7 @@ contextReplace | 否 | {search:String,replace:String}[] | 替换返回的`Body`�
 这里替换的最后面加了`/`是因为不加的话`Glitch`会进行301跳转
 
 现在`Cloudflare Worker`接收到来自`https://worker.com/api/1/envelope`的Post会自动转发Post到`https://sentry.you.com/api/1/envelope/`，并返回来自 Sentry/GlitchTip 的返回结果
+
+## Buy Me Coffice
+- Paypal : https://paypal.me/fudaoyuan
+- 支付宝/微信支付 : https://mbd.pub/o/author-bWuWk29q

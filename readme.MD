@@ -108,3 +108,6 @@ The last part of the replacement here adds `/` because if you don't add it, `Gli
 
 Now `Cloudflare Worker` will automatically forward the Post from `https://worker.com/api/1/envelope` to `https://sentry.you.com/api/1/envelope/` and return the result from Sentry/ GlitchTip's return result
 
+## Buy Me Coffice
+- Paypal : https://paypal.me/fudaoyuan
+- Alipay/WePay(Chinese) : https://mbd.pub/o/author-bWuWk29q
