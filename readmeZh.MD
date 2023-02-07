@@ -28,9 +28,9 @@ contextReplace | 否 | {search:String,replace:String}[] | 替换返回的`Body`�
     },
     {
         type: "POST",
-        url: "https://umami.fudaoyuan.icu",
+        url: "https://umami.you.com",
         urlReplace: ["/foo/bar", "/api/collect"]
-    },
+    }
 ```
 #### Get说明
 其中，Get配置为你的网站向你的Cloudflare Worker代理请求的配置
@@ -54,13 +54,17 @@ contextReplace | 否 | {search:String,replace:String}[] | 替换返回的`Body`�
 现在`Cloudflare Worker` 接收到来自 `https://worker.com/foo/bar` 的Post会自动转发Post到 `https://umami.you.com/api/collect` , 并返回来自umami的返回结果
 
 ### Sentry/GlitchTip配置
+首先，让我们假设你的
+ - Sentry/GlitchTip 后端网址是: `https://sentry.you.com`  
+ - Sentry/GlitchTip Js地址是: `https://browser.sentry-cdn.com/7.36.0/bundle.tracing.min.js`
+ - `Cloudflare Worker`网址是: `https://worker.com`
 ```
     {
         type: "GET",
         url: "https://browser.sentry-cdn.com",
         urlReplace: ["/mio.js", "/7.36.0/bundle.tracing.min.js"],
         contextReplace: [{
-            search: "${t.host}", replace: "js.fudaoyuan.icu"
+            search: "${t.host}", replace: "worker.com"
         },
         {
             search: 'sentry_key:t.publicKey,sentry_version:"7",...n&&{sentry_client',
@@ -70,7 +74,7 @@ contextReplace | 否 | {search:String,replace:String}[] | 替换返回的`Body`�
     },
     {
         type: "POST",
-        url: "https://sentry.fudaoyuan.icu",
+        url: "https://sentry.you.com",
         urlReplace: ["/api/1/envelope", "/api/1/envelope/"],
         paramReplace: [
             { search: "mio_key", replace: "sentry_key" },
@@ -80,10 +84,6 @@ contextReplace | 否 | {search:String,replace:String}[] | 替换返回的`Body`�
         contextType: "application/json"
     }
 ```
-首先，让我们假设你的
- - Sentry/GlitchTip 后端网址是: `https://sentry.you.com`  
- - Sentry/GlitchTip Js地址是: `https://browser.sentry-cdn.com/7.36.0/bundle.tracing.min.js`
- - `Cloudflare Worker`网址是: `https://worker.com`
  #### Get说明
 其中，Get配置为你的网站向你的Cloudflare Worker代理请求的配置
 

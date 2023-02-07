@@ -28,9 +28,9 @@ First, let's assume that your
     },
     {
         type: "POST",
-        url: "https://umami.fudaoyuan.icu",
+        url: "https://umami.you.com",
         urlReplace: ["/foo/bar", "/api/collect"]
-    },
+    }
 ```
 #### Get description
 Where the Get configuration is the configuration of your site's request to your Cloudflare Worker proxy
@@ -54,36 +54,36 @@ We use `urlReplace` to replace Url from `/foo/bar` to `/api/collect` globally,
 Now `Cloudflare Worker` receive Post from `https://worker.com/foo/bar` will automatically forward Post to `https://umami.you.com/api/collect` , and return the return result from umami
 
 ### Sentry/GlitchTip configuration
+First, let's assume that your
+ - Sentry/GlitchTip backend URL is: ``https://sentry.you.com``  
+ - Sentry/GlitchTip Js address is: ``https://browser.sentry-cdn.com/7.36.0/bundle.tracing.min.js``
+ - `Cloudflare Worker` URL is: `https://worker.com`
 ```
     {
         type: "GET",
         url: "https://browser.sentry-cdn.com",
         urlReplace: ["/mio.js", "/7.36.0/bundle.tracing.min.js"],
         contextReplace: [{
-            search: "${t.host}", replace: "js.fudaoyuan.icu"
+            search: "${t.host}", replace: "worker.com"
         },
         {
-            search: 'sentry_key:t.publicKey,sentry_version: "7",. .n&&{sentry_client',
-            replace: 'mio_key:t.publicKey,mio_version: "7",.... .n&&{mio_client'
+            search: 'sentry_key:t.publicKey,sentry_version:"7",...n&&{sentry_client',
+            replace: 'mio_key:t.publicKey,mio_version:"7",...n&&{mio_client'
         }],
         contextType: "application/javascript"
     },
     {
         type: "POST",
-        url: "https://sentry.fudaoyuan.icu",
-        urlReplace: [ "/api/1/envelope", "/api/1/envelope/" ],
+        url: "https://sentry.you.com",
+        urlReplace: ["/api/1/envelope", "/api/1/envelope/"],
         paramReplace: [
-            { search: "mio_key", replace: "sentry_key" }
-            { search: "mio_version", replace: "sentry_version" }
-            { search: "mio_client", replace: "sentry_client" }, { search: "mio_client", replace: "sentry_client" }
+            { search: "mio_key", replace: "sentry_key" },
+            { search: "mio_version", replace: "sentry_version" },
+            { search: "mio_client", replace: "sentry_client" },
         ],
         contextType: "application/json"
     }
 ```
-First, let's assume that your
- - Sentry/GlitchTip backend URL is: ``https://sentry.you.com``  
- - Sentry/GlitchTip Js address is: ``https://browser.sentry-cdn.com/7.36.0/bundle.tracing.min.js``
- - `Cloudflare Worker` URL is: `https://worker.com`
  #### Get description
 Where Get is configured for your site to request from your Cloudflare Worker proxy
 
