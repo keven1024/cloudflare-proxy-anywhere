@@ -77,7 +77,6 @@ const getScript = async (event, item) => {
     if (!response && enableCache) {
         // get 原始地址
         let params = new URL(event.request.url).search;
-        console.log(item.url + item.urlReplace[1] + params)
         // 过滤params
         params = handleParamReplace(item, params)
         if (params && params !== '') {
@@ -134,10 +133,8 @@ const handleContextReplace = (item, context) => {
 // 处理
 const handleParamReplace = (item, params) => {
     let newParams = params
-    console.log(item?.paramReplace, newParams)
     if (item?.paramReplace && newParams && newParams !== '') {
         for (let h = 0; h < item.paramReplace.length; h++) {
-            console.log(item.paramReplace)
             newParams = newParams.replace(item.paramReplace[h].search, item.paramReplace[h].replace);
         }
     }
