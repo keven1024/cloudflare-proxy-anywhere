@@ -3,6 +3,10 @@
 
 [English](readme.MD) | 中文
 
+## 感谢
+基于[vitobotta](https://github.com/vitobotta)的代码进行二次开发，在此表示感谢，原始代码：
+https://github.com/umami-software/umami/discussions/1026
+
 ## 使用
 Key | 必填 | TypeScript类型 | 说明
 --- | --- | --- | ---

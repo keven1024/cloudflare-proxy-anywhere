@@ -3,6 +3,10 @@ A Worker that uses Cloudflare to solve Umami and Sentry by anti-advertising bloc
 
 English | [中文](readmeZh.MD)
 
+## Thank
+Secondary development based on the code of [vitobotta](https://github.com/vitobotta), for which we would like to express our gratitude, the original code.
+https://github.com/umami-software/umami/discussions/1026
+
 ## Use
 Key | Required | TypeScript type | Description
 --- | --- | --- | --- 
