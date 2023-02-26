@@ -20,6 +20,28 @@ const proxyMyJS = [
         ],
     }
 ]
+// 这里编写你的代理规则
+const proxyMyJS = [
+    {
+        type: "GET",
+        url: "https://httpbin.org",
+        urlReplace: ["/1", "/get"],
+        contextReplace: [{search: "args", replace: "genshin"}],
+        contextType: "application/javascript",
+        paramReplace: [
+            {search: "mio_key", replace: "sentry_key"},
+        ],
+    },
+    {
+        type: "POST",
+        url: "https://httpbin.org",
+        urlReplace: ["/2", "/post"],
+        contextType: "application/json",
+        paramReplace: [
+            {search: "mio_key", replace: "sentry_key"},
+        ],
+    }
+]
 // 开启Get缓存
 const enableCache = true;
 
@@ -44,7 +66,7 @@ const handlePath = (path) => {
 }
 
 const handleRequest = async (event) => {
-    const { method, url } = event.request
+    const {method, url} = event.request
     const pathname = handlePath(new URL(url).pathname)
 
     // 对于预检请求一律返回200
@@ -58,20 +80,20 @@ const handleRequest = async (event) => {
 
     // 循环判断该执行那个
     for (let i = 0; i < proxyMyJS.length; i++) {
-        if (proxyMyJS[i].type === method && proxyMyJS[i].urlReplace[0] === pathname) {
+        if (proxyMyJS[i].type === method && proxyMyJS[i].urlReplace[0].test(pathname)) {
 
             switch (method) {
                 case "GET":
-                    return getScript(event, proxyMyJS[i])
+                    return getScript(event, proxyMyJS[i], pathname)
                 case "POST":
-                    return postData(event, proxyMyJS[i])
+                    return postData(event, proxyMyJS[i], pathname)
             }
         }
     }
-    return new Response(null, { status: 404 })
+    return new Response(null, {status: 404})
 }
 
-const getScript = async (event, item) => {
+const getScript = async (event, item, pathname) => {
     // 缓存功能
     let response = await caches.default.match(event.request);
     if (!response && enableCache) {
@@ -81,9 +103,9 @@ const getScript = async (event, item) => {
         params = handleParamReplace(item, params)
         if (params && params !== '') {
             // 带params的，不缓存
-            response = await fetch(item.url + item.urlReplace[1] + params);
+            response = await fetch(item.url + handleUrlReplace(pathname, item.urlReplace) + params);
         } else {
-            response = await fetch(item.url + item.urlReplace[1]);
+            response = await fetch(item.url + handleUrlReplace(pathname, item.urlReplace));
         }
 
         let js = await response.text();
@@ -101,7 +123,7 @@ const getScript = async (event, item) => {
     return response;
 }
 
-const postData = async (event, item) => {
+const postData = async (event, item, pathname) => {
     const request = new Request(event.request);
     request.headers.delete('cookie');
     let params = new URL(event.request.url).search;
@@ -109,9 +131,9 @@ const postData = async (event, item) => {
     params = handleParamReplace(item, params)
     if (params && params !== '') {
         // 带params的，不缓存
-        response = await fetch(item.url + item.urlReplace[1] + params, request);
+        response = await fetch(item.url + handleUrlReplace(pathname, item.urlReplace) + params, request);
     } else {
-        response = await fetch(item.url + item.urlReplace[1], request);
+        response = await fetch(item.url + handleUrlReplace(pathname, item.urlReplace), request);
     }
     let js = await response.text();
     // 过滤body结果
@@ -156,3 +178,9 @@ const handleResponse = (response, body, item) => {
     })
     return response
 }
+
+// 正则处理url替换
+const handleUrlReplace = (text, list) => {
+    return text.replace(list[0], list[1])
+}
+
