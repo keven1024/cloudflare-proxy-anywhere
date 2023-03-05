@@ -164,11 +164,19 @@ const handleParamReplace = (item, params) => {
 }
 
 const handleResponse = (response, body, item) => {
+    // 生成Allow-Headers头
+    let acrh = ''
+    response.headers.forEach((...list)=>{
+        if(acrh !== ''){
+            acrh += ','
+        }
+        acrh += (list[1])
+    })
     // 替换结果
     let resultHeaders = {
         ...response.headers,
         ...corsHeaders,
-        'Access-Control-Allow-Headers': response.headers.get('Access-Control-Request-Headers'),
+        'Access-Control-Allow-Headers': acrh,
     }
     if (item?.contextType) {
         resultHeaders["content-type"] = item.contextType;
