@@ -9,6 +9,7 @@ const proxyMyJS = [
         paramReplace: [
             { search: "mio_key", replace: "sentry_key" },
         ],
+        customAllowHeaders: ["X-Powered-By"]
     },
     {
         type: "POST",
@@ -26,10 +27,10 @@ const proxyMyJS = [
         type: "GET",
         url: "https://httpbin.org",
         urlReplace: ["/1", "/get"],
-        contextReplace: [{search: "args", replace: "genshin"}],
+        contextReplace: [{ search: "args", replace: "genshin" }],
         contextType: "application/javascript",
         paramReplace: [
-            {search: "mio_key", replace: "sentry_key"},
+            { search: "mio_key", replace: "sentry_key" },
         ],
     },
     {
@@ -38,7 +39,7 @@ const proxyMyJS = [
         urlReplace: ["/2", "/post"],
         contextType: "application/json",
         paramReplace: [
-            {search: "mio_key", replace: "sentry_key"},
+            { search: "mio_key", replace: "sentry_key" },
         ],
     }
 ]
@@ -66,7 +67,7 @@ const handlePath = (path) => {
 }
 
 const handleRequest = async (event) => {
-    const {method, url} = event.request
+    const { method, url } = event.request
     const pathname = handlePath(new URL(url).pathname)
 
     // 对于预检请求一律返回200
@@ -90,7 +91,7 @@ const handleRequest = async (event) => {
             }
         }
     }
-    return new Response(null, {status: 404})
+    return new Response(null, { status: 404 })
 }
 
 const getScript = async (event, item, pathname) => {
@@ -165,18 +166,18 @@ const handleParamReplace = (item, params) => {
 
 const handleResponse = (response, body, item) => {
     // 生成Allow-Headers头
-    let acrh = ''
-    response.headers.forEach((...list)=>{
-        if(acrh !== ''){
-            acrh += ','
-        }
-        acrh += (list[1])
+    let acrh = []
+    response.headers.forEach((...list) => {
+        acrh.push(list[1])
     })
+    if (item?.customAllowHeaders) {
+        arch = [...arch, ...item.customAllowHeaders]
+    }
     // 替换结果
     let resultHeaders = {
         ...response.headers,
         ...corsHeaders,
-        'Access-Control-Allow-Headers': acrh,
+        'Access-Control-Allow-Headers': acrh.join(','),
     }
     if (item?.contextType) {
         resultHeaders["content-type"] = item.contextType;
