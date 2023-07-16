@@ -48,6 +48,23 @@ const handleRequest = async (event) => {
     const { method, url } = event.request
     const pathname = handlePath(new URL(url).pathname)
 
+    // 循环判断该执行那个
+    for (let i = 0; i < proxyMyJS.length; i++) {
+        if (proxyMyJS[i].urlReplace[0].test(pathname)) {
+            if (method === "OPTIONS") {
+                return handleResponse(new Response(null, {}), null, proxyMyJS[i])
+            }
+            if (proxyMyJS[i].type === method) {
+                switch (method) {
+                    case "GET":
+                        return getScript(event, proxyMyJS[i], pathname)
+                    case "POST":
+                        return postData(event, proxyMyJS[i], pathname)
+                }
+            }
+        }
+    }
+
     // 对于预检请求一律返回200
     if (method === "OPTIONS") {
         return new Response(null, {
@@ -55,19 +72,6 @@ const handleRequest = async (event) => {
                 ...corsHeaders
             }
         })
-    }
-
-    // 循环判断该执行那个
-    for (let i = 0; i < proxyMyJS.length; i++) {
-        if (proxyMyJS[i].type === method && proxyMyJS[i].urlReplace[0].test(pathname)) {
-
-            switch (method) {
-                case "GET":
-                    return getScript(event, proxyMyJS[i], pathname)
-                case "POST":
-                    return postData(event, proxyMyJS[i], pathname)
-            }
-        }
     }
     return new Response(null, { status: 404 })
 }
@@ -144,19 +148,19 @@ const handleParamReplace = (item, params) => {
 
 const handleResponse = (response, body, item) => {
     // 生成Allow-Headers头
-    let acrh = []
+    let allowHeaders = []
     response.headers.forEach((...list) => {
-        acrh.push(list[1])
+        allowHeaders.push(list[1])
     })
-    if (item?.customAllowHeaders) {
-        arch = [...arch, ...item.customAllowHeaders]
+    if (item?.customAllowHeaders && item.customAllowHeaders.length > 0) {
+        allowHeaders = [...allowHeaders, ...item.customAllowHeaders]
     }
     // 替换结果
     let resultHeaders = {
         ...response.headers,
         ...corsHeaders,
-        'Access-Control-Allow-Headers': acrh.join(','),
     }
+    resultHeaders['Access-Control-Allow-Headers'] += ',' + allowHeaders.join(',')
     if (item?.contextType) {
         resultHeaders["content-type"] = item.contextType;
     }
@@ -170,4 +174,3 @@ const handleResponse = (response, body, item) => {
 const handleUrlReplace = (text, list) => {
     return text.replace(list[0], list[1])
 }
-
