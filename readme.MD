@@ -1,27 +1,35 @@
 ## cloudflare-proxy-anywhere
+
 A Worker that uses Cloudflare to solve Umami and Sentry by anti-advertising blocking
 
 English | [中文](readmeZh.MD)
 
 ## Thank
+
 Secondary development based on the code of [vitobotta](https://github.com/vitobotta), for which we would like to express our gratitude, the original code.
 https://github.com/umami-software/umami/discussions/1026
 
 ## Use
-Key | Required | TypeScript type | Description
---- | --- | --- | --- 
-type | is | String | the request type, GET or POST
-url | Yes | String | The URL of the JS being proxied, do not fill in path
-urlReplace | Yes | [String,String] | The `path` to access the proxy and the `path` to access the real url
-paramReplace | No | {search:String,replace:String}[] | Parameter replacement for the url
-contextType | No | String | Specifies the `content-type` of the returned content header.
-contextReplace | no | {search:String,replace:String}[] | Replace the content of the returned `Body`.
+
+| Key                | Required | TypeScript type                  | Description                                                                                           |
+| ------------------ | -------- | -------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| type               | is       | String                           | the request type, GET or POST                                                                         |
+| url                | Yes      | String                           | The URL of the JS being proxied, do not fill in path                                                  |
+| urlReplace         | Yes      | [String,String]                  | The `path` to access the proxy and the `path` to access the real url, Support for Regular Expressions |
+| paramReplace       | No       | {search:String,replace:String}[] | Parameter replacement for the url                                                                     |
+| contextType        | No       | String                           | Specifies the `content-type` of the returned content header.                                          |
+| contextReplace     | no       | {search:String,replace:String}[] | Replace the content of the returned `Body`.                                                           |
+| customAllowHeaders | No       | string[]                         | Append the content of `Access-Control-Allow-Headers` in the returned Header.                          |
 
 ## Configuration Demo
+
 ### Umami configuration
+
 First, let's assume that your
- - Umami URL is: `https://umami.you.com`  
- - `Cloudflare Worker` URL is: `https://worker.com`
+
+- Umami URL is: `https://umami.you.com`
+- `Cloudflare Worker` URL is: `https://worker.com`
+
 ```
     {
         type: "GET",
@@ -36,12 +44,14 @@ First, let's assume that your
         urlReplace: ["/foo/bar", "/api/collect"]
     }
 ```
+
 #### Get description
+
 Where the Get configuration is the configuration of your site's request to your Cloudflare Worker proxy
 
 This configuration sets the Url that you use to access your original Umami from  
 `https://umami.you.com/umami.js` to `https://worker.com/whatever.js`
-This will disable most of the adblock rules that block `umami` as a keyword, but of course this is not enough, we also need to hide the umami submission characteristics  
+This will disable most of the adblock rules that block `umami` as a keyword, but of course this is not enough, we also need to hide the umami submission characteristics
 
 The original `umami` submission URL is `https://umami.you.com/api/collect`, here we use `contextReplace` to replace them all with `/foo/bar`,
 
@@ -58,10 +68,13 @@ We use `urlReplace` to replace Url from `/foo/bar` to `/api/collect` globally,
 Now `Cloudflare Worker` receive Post from `https://worker.com/foo/bar` will automatically forward Post to `https://umami.you.com/api/collect` , and return the return result from umami
 
 ### Sentry/GlitchTip configuration
+
 First, let's assume that your
- - Sentry/GlitchTip backend URL is: ``https://sentry.you.com``  
- - Sentry/GlitchTip Js address is: ``https://browser.sentry-cdn.com/7.36.0/bundle.tracing.min.js``
- - `Cloudflare Worker` URL is: `https://worker.com`
+
+- Sentry/GlitchTip backend URL is: `https://sentry.you.com`
+- Sentry/GlitchTip Js address is: `https://browser.sentry-cdn.com/7.36.0/bundle.tracing.min.js`
+- `Cloudflare Worker` URL is: `https://worker.com`
+
 ```
     {
         type: "GET",
@@ -88,7 +101,9 @@ First, let's assume that your
         contextType: "application/json"
     }
 ```
- #### Get description
+
+#### Get description
+
 Where Get is configured for your site to request from your Cloudflare Worker proxy
 
 This configuration sets the Url of your original `Sentry/GlitchTip` JS to be accessed from
@@ -104,6 +119,7 @@ The original Param parameters of Sentry/GlitchTip are `sentry_key`, `sentry_vers
 Finally, the return type, we set `application/javascript` by `contextType` to make the browser use it as Javascript
 
 #### Post description
+
 We changed all the Param submission parameters to start with `mio_` in the previous step, and now the Sentry/GlitchTip JS script will automatically Post data to `https://worker.com/api/1/envelope`, and we need to specify the Url address for forwarding.
 
 We use `urlReplace` to globally replace Url from `/api/1/envelope` with `/api/1/envelope/`.
@@ -113,5 +129,6 @@ The last part of the replacement here adds `/` because if you don't add it, `Gli
 Now `Cloudflare Worker` will automatically forward the Post from `https://worker.com/api/1/envelope` to `https://sentry.you.com/api/1/envelope/` and return the result from Sentry/ GlitchTip's return result
 
 ## Buy Me Coffice
+
 - Paypal : https://paypal.me/fudaoyuan
 - Alipay/WePay(Chinese) : https://mbd.pub/o/author-bWuWk29q

@@ -12,10 +12,11 @@ Key | 必填 | TypeScript类型 | 说明
 --- | --- | --- | ---
 type |是 | String | 请求类型，GET或者POST
 url | 是| String | 被代理JS的URL，不要填写path
-urlReplace | 是 | [String,String]  | 访问代理的`path`和访问真实url的`path`
+urlReplace | 是 | [String,String]  | 访问代理的`path`和访问真实url的`path`，支持正则表达式
 paramReplace | 否 | {search:String,replace:String}[] | 对url的参数替换
 contextType | 否 | String | 指定返回内容头的 `content-type`
 contextReplace | 否 | {search:String,replace:String}[] | 替换返回的`Body`的内容
+customAllowHeaders | 否 | string[] | 追加返回的Header里的`Access-Control-Allow-Headers`的内容
 
 ## 配置Demo
 ### Umami配置
