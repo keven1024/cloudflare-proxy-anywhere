@@ -21,28 +21,6 @@ const proxyMyJS = [
         ],
     }
 ]
-// 这里编写你的代理规则
-const proxyMyJS = [
-    {
-        type: "GET",
-        url: "https://httpbin.org",
-        urlReplace: ["/1", "/get"],
-        contextReplace: [{ search: "args", replace: "genshin" }],
-        contextType: "application/javascript",
-        paramReplace: [
-            { search: "mio_key", replace: "sentry_key" },
-        ],
-    },
-    {
-        type: "POST",
-        url: "https://httpbin.org",
-        urlReplace: ["/2", "/post"],
-        contextType: "application/json",
-        paramReplace: [
-            { search: "mio_key", replace: "sentry_key" },
-        ],
-    }
-]
 // 开启Get缓存
 const enableCache = true;
 
