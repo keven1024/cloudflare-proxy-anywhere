@@ -50,7 +50,13 @@ const handleRequest = async (event) => {
 
     // 循环判断该执行那个
     for (let i = 0; i < proxyMyJS.length; i++) {
-        if (proxyMyJS[i].urlReplace[0].test(pathname)) {
+        const pathRegex = proxyMyJS[i].urlReplace[0]
+        const match =
+        typeof pathRegex === 'string'
+          ? pathRegex === pathname
+          : pathRegex.test(pathname)
+
+        if (match) {
             if (method === "OPTIONS") {
                 return handleResponse(new Response(null, {}), null, proxyMyJS[i])
             }
